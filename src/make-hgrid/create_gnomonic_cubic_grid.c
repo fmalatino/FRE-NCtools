@@ -2255,16 +2255,35 @@ int index_an_gr2(int jcf, int p_npi, int icf, int max_ni, int max_nj, int parent
   {
     // fprintf(stderr, "Big j\n");
     overlap = jcf - max_nj;
-    // fprintf(stderr, "tile north = %d, overlap = %d, jcf = %d, icf = %d, p_npi = %d\n\n", tn, overlap, jcf, icf, p_npi);
-    return tile_offset[tn - 1] + overlap * p_npi + icf;
+    fprintf(stderr, "tile north = %d, overlap = %d, jcf = %d, icf = %d, p_npi = %d\n\n", tn, overlap, jcf, icf, p_npi);
+    
+    if((parent_tile%2==0 && tn%2==0) || (parent_tile%2!=0 && tn%2!=0)) 
+    {
+      fprintf(stderr, "nest[%d][%d] = t%d[%d][%d]\n\n", jcf,icf, tn, p_npi - icf - 1, overlap);
+      return tile_offset[tn - 1] + (p_npi - icf - 1)*p_npi + overlap;
+    }
+    else 
+    {
+      fprintf(stderr, "nest[%d][%d] = t%d[%d][%d]\n\n", jcf,icf, tn, overlap, icf);
+      return tile_offset[tn - 1] + overlap * p_npi + icf;
+    }
   }
   else if(icf > max_ni)
   {
     // fprintf(stderr, "Big i\n");
     overlap = icf - max_ni;
-    // fprintf(stderr, "tile east = %d, overlap = %d, jcf = %d, icf = %d, p_npi = %d\n\n", te, overlap, jcf, icf, p_npi);
-    // fprintf(stderr, "nest[%d] = t2[%d]\n\n", jcf*p_npi + icf, overlap*p_npi + jcf);
-    return tile_offset[te - 1] + overlap + jcf*p_npi;
+    fprintf(stderr, "tile east = %d, overlap = %d, jcf = %d, icf = %d, p_npi = %d\n\n", te, overlap, jcf, icf, p_npi);
+    
+    if((parent_tile%2==0 && te%2==0) || (parent_tile%2!=0 && te%2!=0))
+    {
+      fprintf(stderr, "nest[%d][%d] = t%d[%d][%d]\n\n", jcf,icf, te, overlap, p_npi - jcf - 1);
+      return  tile_offset[te - 1] + overlap*p_npi + p_npi - jcf - 1;
+    }
+    else 
+    {
+      fprintf(stderr, "nest[%d][%d] = t%d[%d][%d]\n\n", jcf,icf, te, jcf, overlap);
+      return tile_offset[te - 1] + jcf*p_npi + overlap;
+    }
   }
   else
   {
@@ -2463,22 +2482,34 @@ void setup_aligned_nest2(int parent_ni, int parent_nj, const double *parent_xc, 
       if( xc[j*npi+i] < 0. ) xc[j*npi+i] += two_pi;
 
       /*ERASE ME*/
-      fprintf(stderr, "i = %d, j = %d, ic = %d, jc = %d, imod = %d, jmod = %d, index = %d\n", i,j,ic,jc,imod,jmod,index);
-      fprintf(stderr, "nest[%d][%d] = %f\n", j,i,xc[j*npi+i]*R2D);
-      fprintf(stderr, "parent[%d][%d][%d] = %f\n", (index-ic-(jc-parent_nj)*parent_npi)/(parent_npi*parent_npi),jc,ic,parent_xc[index]*R2D);
+      // fprintf(stderr, "i = %d, j = %d, ic = %d, jc = %d, imod = %d, jmod = %d, index = %d\n", i,j,ic,jc,imod,jmod,index);
+      // fprintf(stderr, "nest[%d][%d] = %f\n", j,i,xc[j*npi+i]*R2D);
+      // fprintf(stderr, "parent[%d][%d][%d] = %f\n", (index-ic-(jc-parent_nj)*parent_npi)/(parent_npi*parent_npi),jc,ic,parent_xc[index]*R2D);
 
     }
   }//end j loop
 
   /*ERASE ME*/
-  // fprintf(stderr, "\n\nTile 2 xc:\n");
+  // fprintf(stderr, "\n\nTile 1 xc:\n");
   // for(int jj = 0; jj<parent_npi; jj++)
   // {
   //   for(int ii = 0; ii<parent_npi; ii++)
   //   {
-  //     fprintf(stderr, "%f ", parent_xc[parent_npi*parent_npi+jj*parent_npi+ii]*R2D);
+  //     // fprintf(stderr, "%f ", parent_xc[5*parent_npi*parent_npi+jj*parent_npi+ii]*R2D);
+  //     fprintf(stderr, "%f ", parent_xc[jj*parent_npi+ii]*R2D);
   //   }
   //   fprintf(stderr,"\n");
   // }
   // fprintf(stderr, "\n");
+
+//   fprintf(stderr, "\n\nTile 7 xc:\n");
+//   for(int jj = 0; jj<npi; jj++)
+//   {
+//     for(int ii = 0; ii<npi; ii++)
+//     {
+//       fprintf(stderr, "%f ", xc[jj*npi+ii]*R2D);
+//     }
+//     fprintf(stderr,"\n");
+//   }
+//   fprintf(stderr, "\n");
 }
